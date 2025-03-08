@@ -1,0 +1,36 @@
+## Custom DBT profile
+## Reference: https://docs.getdbt.com/docs/core/connect-data-platform/bigquery-setup
+
+# The first line is the dbt project name. This is where dbt looks for from dbt_project.yml -> find the named profile here. 
+# Can also be overwritten by dbt run --profiles. See dbt run --help for more info
+london_bicycle: # dbt project name
+  # default target for profile, points to 1 of the output below # define target in dbt CLI via --target
+  target: dev # Usually either dev or production
+  outputs:
+    threads: 1
+    location: EU
+    priority: interactive
+    dev:
+      type: bigquery
+      method: oauth 
+      project: sctp-dbt-learn
+      dataset: london_bike
+      retries: 2
+  config:
+    send_anonymous_usage_stats: False
+
+
+london_bicycle:
+  config:
+    send_anonymous_usage_stats: false
+  outputs:
+    dev:
+      dataset: london_bike
+      method: oauth
+      project: sctp-dbt-learn
+      retries: 2
+      type: bigquery
+    location: EU
+    priority: interactive
+    threads: 1
+  target: dev
