@@ -6,6 +6,8 @@
 - Get Google Bigquery Project name ready, if not create a new project.
 - In Bigquery, create a dataset to use (This is optional, DBT able to create dataset for you under the profile settings)
 
+
+
 ## Key DBT Commands
 The following are DBT key commands:
 - `dbt init <dbt-project-name>` : DBT init perform 2 tasks, set the a subfolder with the project name and also populate a structure subfolder that DBT required. DBT also setup connection profile automatically including its authentication methods. This command is not suitable for existing project. Please run this command under the root folder if you have many projects.
@@ -260,6 +262,8 @@ Happy modeling!
 ## Verifying DBT Connections : dbt debug
 We use `dbt debug` to confirm our connection and our settings in the profile.
 
+https://docs.getdbt.com/reference/commands/debug
+
 **IMPORTANT:**
 - **You MUST run `dbt debug` under the individual project folder.**
 - **When `dbt debug` starts, it will look for the following files:**
@@ -446,4 +450,16 @@ config-version: 2
 profile: "liquor_sales" # Change this to any profile listed above before dbt run
 
 ....
+```
 
+**Reference**
+
+- https://docs.getdbt.com/docs/core/connect-data-platform/connection-profiles
+- https://docs.getdbt.com/docs/core/connect-data-platform/bigquery-setup
+
+
+
+
+other ref
+https://docs.getdbt.com/guides/manual-install?step=1
+https://docs.getdbt.com/guides/bigquery?step=1
