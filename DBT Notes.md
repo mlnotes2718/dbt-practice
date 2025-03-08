@@ -4,10 +4,10 @@
 - Need Google account and Sign-up with Bigquery
 - Use `gcloud auth application-default login` to create easy access to Google Bigquery
 - Get Google Bigquery Project name ready, if not create a new project.
-- In Bigquery, create a dataset to use (This is optional, DBT able to create dataset for you)
+- In Bigquery, create a dataset to use (This is optional, DBT able to create dataset for you under the profile settings)
 
 ## Key DBT Commands
-The following are DBT common key commands:
+The following are DBT key commands:
 - `dbt init <dbt-project-name>` : DBT init perform 2 tasks, set the a subfolder with the project name and also populate a structure subfolder that DBT required. DBT also setup connection profile automatically including its authentication methods. This command is not suitable for existing project. Please run this command under the root folder if you have many projects.
 
 The following command **MUST** be run under the specific project folder.
@@ -55,6 +55,7 @@ Please note that there are multiple ways for DBT to work with profile, they are:
 - Desired location option (enter a number): 1 for US and 2 for EU
 
 **Example**
+
 The following is a sample of automatic init
 ```text
 % dbt init shaffle_shop
@@ -97,9 +98,10 @@ Desired location option (enter a number): 1
 05:59:28  Profile shaffle_shop written to /Users/USER/.dbt/profiles.yml using target's profile_template.yml and your supplied values. Run 'dbt debug' to validate the connection.
 ```
 **Checking Profile**
+
 Under the folder `/Users/USER/.dbt/profiles.yml`, you should have something similar:
 ```shell
-jaffle_shop: # DBT project name
+jaffle_shop: # profile name (usually same as the project name in auto configuration)
   outputs:
     dev: # Target, usually dev or prod to differentiate between development and production
       dataset: shaffle_shop #(google dataset, in this case I use the same name with the project name)
@@ -130,7 +132,8 @@ jaffle_shop: # DBT project name
 - Desired location option (enter a number): 1 for US and 2 for EU
 
 **Example**
-The following is an example, the process is teh same except that we use service account.
+
+The following is an example, the process is the same except that we use service account.
 ```text
 % dbt init liquor_sales
 09:09:22  Running with dbt=1.9.2
@@ -172,15 +175,16 @@ Desired location option (enter a number): 1
 ```
 
 **Checking Profile**
+
 Under the folder `/Users/USER/.dbt/profiles.yml`, you should have something similar:
 ```shell
-liquor_sales:
+liquor_sales: # profile name (usually same as the project name in auto configuration)
   outputs:
     dev:
-      dataset: iowa_liquor_sales # This dataset is not create in Bigquery yet. ABT should able to create it automatically.
+      dataset: iowa_liquor_sales # This dataset is not create in Bigquery yet. DBT should able to create it automatically.
       job_execution_timeout_seconds: 300
       job_retries: 1
-      keyfile: /Users/USER/.dbt/name-of-your-service-key-created-in-Google.json
+      keyfile: /Users/USER/.dbt/name-of-your-service-key-created-in-Google.json #Under service account we need to specify the location of the keyfile
       location: US
       method: service-account
       priority: interactive
@@ -199,9 +203,9 @@ First we need a profile setup, see a sample profile:
 ## Custom DBT profile
 ## Reference: https://docs.getdbt.com/docs/core/connect-data-platform/bigquery-setup
 
-# The first line is the dbt project name. This is where dbt looks for from dbt_project.yml -> find the named profile here. 
+# The first line is the profile name. This is where dbt looks for from dbt_project.yml -> find the named profile here. 
 # Can also be overwritten by dbt run --profiles. See dbt run --help for more info
-london_bicycle: # dbt project name
+london_bicycle: # profile name (In this case where profile name come first, the project name will follow the profile name)
   # default target for profile, points to 1 of the output below # define target in dbt CLI via --target
   target: dev # Usually either dev or production
   outputs:
@@ -219,16 +223,17 @@ london_bicycle: # dbt project name
 ```
 
 **IMPORTANT NOTES:**
-- **The profile name has to be `profiles.yml`.**
-- **The profile need to be located where you run `dbt init`, otherwise dbt will use to the default profile location.**
+- **The name of the file that contains the profile configuration has to be `profiles.yml`.**
+- **The profile need to be located where you run `dbt init`, otherwise dbt will use to the default profile location at `/Users/USER/.dbt/profile.yml`.**
 
 **Where to put the profile:**
 - **We can place the `profiles.yml` at the root folder where we collected all different DBT projects. The profiles of additional DBT projects will be recorded under `profiles.yml`.**
-- **Alternatively, we can place the profile (`profiles.yml`) into each project folder. This means that each project folder contains one profile configuration. In this case you need to physically move the file `profiles.yml` to the project subMore will be explain under `dbt debug`.**
+- **Alternatively, we can place the profile (`profiles.yml`) into each project folder. This means that each project folder contains their own profile configuration. In this case you need to physically move the file `profiles.yml` to the project subfolder.**
 
-The command to run the initialization is `dbt init --profile <dbt-project-name-in-profiles>`. You can also run `dbt init` where it will ask you to enter the project name. After that it will ask if you want to reset the profile configuration in your current profile.
+The command to run the initialization is `dbt init --profile <dbt-profile-name>`. You can also run `dbt init` where it will ask you to enter the profile name. After that it will ask if you want to reset the profile configuration in your current profile.
 
 **Example**
+
 The following is a sample of the command output:
 ```text
 % dbt init --profile london_bicycle
@@ -252,8 +257,6 @@ Happy modeling!
 ```
 
 
-
-
 ## Verifying DBT Connections : dbt debug
 We use `dbt debug` to confirm our connection and our settings in the profile.
 
@@ -261,14 +264,186 @@ We use `dbt debug` to confirm our connection and our settings in the profile.
 - **You MUST run `dbt debug` under the individual project folder.**
 - **When `dbt debug` starts, it will look for the following files:**
 - **DBT will look for `dbt_project.yml` at the location where you run the command.**
-- **DBT will also look for `profiles.yml` at the location where you run the command FIRST, if there is no such file, then it will find the profile at the default location.**
+- **DBT will also look for `profiles.yml` at the location where you run the command FIRST, if there is no such file, then it will find the profile at the default location (`/Users/USER/.dbt/profiles.yml`).**
 - **`dbt debug` will FAIL if it cannot find the file `dbt_project.yml`.**
-- **`dbt debug` will FAIL if it cannot find the matching profile name (same as project name) in `profiles.yml`.**
+- **`dbt debug` will FAIL if it cannot find the matching profile name in `profiles.yml`. The profile name must match the profile settings in `dbt_project.yml`.**
 - **`dbt debug` will FAIL if there is problem with your Oauth or your service key.**
 
 
-If you run `dbt debug` on the wrong location, the following error will occurs:
-![](assets/dbt_debug_error.png)
+The following screen shots shw the success message:
+
+![alt text](assets/dbt-debug-good1.png)
+
+![alt text](assets/dbt-debug-good2.png)
 
 
+### Common Connection Error
+
+The following are possible error message when you run `dbt debug` wrongly:
+
+![alt text](assets/dbt-debug-error-1.png)
+
+**I encounter this error when I run debug at different location, plus I did not activate the appropriate conda environment.**
+
+![alt text](assets/dbt-debug-error-2.png)
+
+**I encounter this error when I run debug at the project folder, but I did not use the appropriate conda environment.**
+
+![alt text](assets/dbt-debug-error-3.png)
+
+**This is the most common error where I run debug at the root folder using the correct conda environment.**
+
+![alt text](assets/dbt-debug-error-4.png)
+
+**Another common profile name error is where the profile name in `profiles.yml` is different from profile name in `dbt_project.yml`.**
+
+See example below:
+```yaml
+!profiles.yml
+liquor: # profile name
+  target: dev # Usually either dev or production
+  outputs:
+    threads: 3
+
+.....
+
+```
+
+```yaml
+!dbt_project.yml
+# Name your project! Project names should contain only lowercase characters
+# and underscores. A good package name should reflect your organization's
+# name or the intended use of these models
+name: "liquor_sales"
+version: "1.0.0"
+config-version: 2
+
+# This setting configures which "profile" dbt uses for this project.
+profile: "liquor_sales" # This profile name must match the name above. 
+
+....
+
+
+```
+
+- **Please note that this error happens when you are creating a new profile for an existing project.**
+- **Important to note that profile name and project name can be different. In auto initialization, all will be the same.**
+- **You need different profile name when you need to create 2 different profiles connected to 2 different data warehouse or database using the same dbt project.**
+
+The troubleshooting process should be as follows:
+1. Check the conda or Python environment
+2. Check if `dbt_project.yml` is there.
+3. Check if `profiles.yml` is at the project folder or default location. 
+4. Make sure the correct profile name is setup in `dbt_project.yml` and `profiles.yml`.
+
+
+### Connecting Existing DBT Project with New Profile
+Based on our understanding of the profiles, we can copy an existing dbt project and create a new profile that could point to our data warehouse.
+
+```yaml
+!profiles.yml
+liquor_sales: # profile name
+  target: dev 
+  outputs:
+    threads: 3
+    location: EU
+    priority: interactive
+    dev:
+      type: bigquery
+      method: oauth 
+      project: bigquery-project-name
+      dataset: dataset_name
+      retries: 2
+  config:
+    send_anonymous_usage_stats: False
+```
+
+```yaml
+!dbt_project.yml
+# Name your project! Project names should contain only lowercase characters
+# and underscores. A good package name should reflect your organization's
+# name or the intended use of these models
+name: "liquor_sales"
+version: "1.0.0"
+config-version: 2
+
+# This setting configures which "profile" dbt uses for this project.
+profile: "liquor_sales"
+
+# These configurations specify where dbt should look for different types of files.
+# The `model-paths` config, for example, states that models in this project can be
+# found in the "models/" directory. You probably won't need to change these!
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets: # directories to be removed by `dbt clean`
+  - "target"
+  - "dbt_packages"
+
+# Configuring models
+# Full documentation: https://docs.getdbt.com/docs/configuring-models
+
+models:
+  liquor_sales:
+    star:
+      +materialized: table
+      +schema: star
+```
+
+**Using the same profile name, `dbt debug` is successful.**
+
+### Connecting Existing DBT Project with Multiple Profile
+We can also connect a same DBT project to different data warehouse or database. We can also setup different profile name for different Google project.
+
+```yaml
+!profiles.yml
+liquor_sales_dev_dwh: # 1st profile name
+  target: dev 
+  outputs:
+    threads: 3
+    location: EU
+    priority: interactive
+    dev:
+      type: bigquery
+      method: oauth 
+      project: bigquery-project-name-1
+      dataset: dataset_name_dev
+      retries: 2
+  config:
+    send_anonymous_usage_stats: False
+liquor_sales_prod_dwh: # 2nd profile name
+  target: dev 
+  outputs:
+    threads: 3
+    location: EU
+    priority: interactive
+    dev:
+      type: bigquery
+      method: oauth 
+      project: bigquery-project-name-2
+      dataset: dataset_name_prod
+      retries: 2
+  config:
+    send_anonymous_usage_stats: False
+```
+
+**Important thing is to set the `dbt_project.yml` profile when you need to run the same project to different database.**
+
+```yaml
+!dbt_project.yml
+# Name your project! Project names should contain only lowercase characters
+# and underscores. A good package name should reflect your organization's
+# name or the intended use of these models
+name: "liquor_sales"
+version: "1.0.0"
+config-version: 2
+
+# This setting configures which "profile" dbt uses for this project.
+profile: "liquor_sales" # Change this to any profile listed above before dbt run
+
+....
 
