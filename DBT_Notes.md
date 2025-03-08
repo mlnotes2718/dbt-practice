@@ -464,3 +464,5 @@ profile: "liquor_sales" # Change this to any profile listed above before dbt run
 
 - https://docs.getdbt.com/guides/manual-install?step=1
 - https://docs.getdbt.com/guides/bigquery?step=1
+
+# DBT Run Notes

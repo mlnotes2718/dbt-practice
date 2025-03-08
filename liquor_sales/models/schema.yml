@@ -13,11 +13,11 @@ models:
         description: "The foreign key to the store dimension table"
         tests:
           - relationships:
-              to: ref('dim_store')
+              to: ref('star_dim_store')
               field: store_number
       - name: item_number
         description: "The foreign key to the store dimension table"
         tests:
           - relationships:
-              to: ref('dim_item')
+              to: ref('star_dim_item')
               field: item_number

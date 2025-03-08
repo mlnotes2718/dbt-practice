@@ -1,0 +1,45 @@
+version: 2
+
+models:
+  - name: sn_dim_store
+    description: "Snowflake dimension table for store."
+    columns:
+      - name: store_number
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+  - name: sn_dim_item
+    description: "Snowflake dimension table for item."
+    columns:
+      - name: item_number
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+  - name: sn_dim_category
+    description: "Snowflake dimension table for category."
+    columns:
+      - name: category
+        description: "The primary key for this table"
+        tests:
+          - not_null
+  - name: sn_dim_county
+    description: "Snowflake dimension table for county."
+    columns:
+      - name: county_number
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+  - name: sn_dim_vendor
+    description: "Snowflake dimension table for vendor."
+    columns:
+      - name: vendor_number
+        description: "The primary key for this table"
+        tests:
+          - not_null
+
+
+
+
