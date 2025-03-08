@@ -1,21 +1,19 @@
-
 version: 2
 
 models:
-  - name: my_first_dbt_model
-    description: "A starter dbt model"
+  - name: dim_store
+    description: "Dimension table for store."
     columns:
-      - name: id
+      - name: store_number
         description: "The primary key for this table"
-        data_tests:
+        tests:
           - unique
           - not_null
-
-  - name: my_second_dbt_model
-    description: "A starter dbt model"
+  - name: dim_item
+    description: "Dimension table for item."
     columns:
-      - name: id
+      - name: item_number
         description: "The primary key for this table"
-        data_tests:
+        tests:
           - unique
           - not_null

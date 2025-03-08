@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: fact_sales
+    description: "Fact table for item."
+    columns:
+      - name: invoice_and_item_number
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+      - name: store_number
+        description: "The foreign key to the store dimension table"
+        tests:
+          - relationships:
+              to: ref('dim_store')
+              field: store_number
+      - name: item_number
+        description: "The foreign key to the store dimension table"
+        tests:
+          - relationships:
+              to: ref('dim_item')
+              field: item_number
