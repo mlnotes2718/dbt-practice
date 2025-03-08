@@ -255,3 +255,20 @@ Happy modeling!
 
 
 ## Verifying DBT Connections : dbt debug
+We use `dbt debug` to confirm our connection and our settings in the profile.
+
+**IMPORTANT:**
+- **You MUST run `dbt debug` under the individual project folder.**
+- **When `dbt debug` starts, it will look for the following files:**
+- **DBT will look for `dbt_project.yml` at the location where you run the command.**
+- **DBT will also look for `profiles.yml` at the location where you run the command FIRST, if there is no such file, then it will find the profile at the default location.**
+- **`dbt debug` will FAIL if it cannot find the file `dbt_project.yml`.**
+- **`dbt debug` will FAIL if it cannot find the matching profile name (same as project name) in `profiles.yml`.**
+- **`dbt debug` will FAIL if there is problem with your Oauth or your service key.**
+
+
+If you run `dbt debug` on the wrong location, the following error will occurs:
+![](assets/dbt_debug_error.png)
+
+
+
