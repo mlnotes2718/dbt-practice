@@ -1,0 +1,19 @@
+version: 2
+
+models:
+  - name: dim_hire
+    description: "Dimension table for bicycle hire."
+    columns:
+      - name: rental_id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null
+  - name: dim_stations
+    description: "Dimension table for stations."
+    columns:
+      - name: id
+        description: "The primary key for this table"
+        tests:
+          - unique
+          - not_null

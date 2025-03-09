@@ -1,60 +1,60 @@
-# DBT Setup Notes
+# dbt Setup Notes
 
 ## Requirements
 - Need Google account and Sign-up with Bigquery
 - Use `gcloud auth application-default login` to create easy access to Google Bigquery
 - Get Google Bigquery Project name ready, if not create a new project.
-- In Bigquery, create a dataset to use (This is optional, DBT able to create dataset for you under the profile settings)
+- In Bigquery, create a dataset (This is optional, dbt able to create dataset for you under the profile settings. Please note that some public datasets which are under EU region such as London bicycle, we need to create the dataset in Bigquery first while setting the region to EU.)
 
 
 
-## Key DBT Commands
-The following are DBT key commands:
-- `dbt init <dbt-project-name>` : DBT init perform 2 tasks, set the a subfolder with the project name and also populate a structure subfolder that DBT required. DBT also setup connection profile automatically including its authentication methods. This command is not suitable for existing project. Please run this command under the root folder if you have many projects.
+## Key dbt Commands
+The following are dbt key commands:
+- `dbt init <dbt-project-name>` : dbt init perform 2 tasks, first it create a subfolder with the project name and also populate multiple subfolder that dbt required inside the project folder. dbt also setup connection profile automatically including its authentication method. This command is not suitable for existing project. Please run this command under the root/home folder if you have many project folders.
 
-The following command **MUST** be run under the specific project folder.
+The following command **MUST** be run under the **specific project folder**.
 - `dbt debug` : Use this command to verified your connection in your profile.
-- `dbt run` : Use this command to run all the SQL script setup in the DBT folders.
-- `dbt test` : Use this command to test the database field. Similar to constraints during database table setup. However, DBT uses schema.yml file for configuration
+- `dbt run` : Use this command to run all the SQL script setup in the dbt folders.
+- `dbt test` : Use this command to test the database field. Similar to constraints during database table setup. However, dbt uses schema.yml file for configuration
 - `dbt seed` : Use this command to convert CSV files into database table
 - `dbt snapshot` : Use this command to build snapshot 
 
 
-## DBT init
+## dbt init
 
 Reference: https://docs.getdbt.com/reference/commands/init
 
-When we initiate `dbt init <dbt-project-name>`, DBT will perform 2 tasks below:
-1. DBT init first task is to create all the necessary subfolder for your project under the name of your project. If there is an existing folder with the same name as the project name, the init will fail.
-2. Next DBT will setup your profile automatically, this includes setting up your authentication method to the data warehouse.
+When we initiate `dbt init <dbt-project-name>`, dbt will perform 2 tasks below:
+1. dbt init first task is to create all the necessary subfolder for your project under the name of your project. If there is an existing folder with the same name as the project name, the init will fail.
+2. Next dbt will setup your profile automatically, this includes setting up your authentication method to the data warehouse.
 
-### DBT Folder Setup
+### dbt Folder Setup
 - If there is an existing folder that is same as the project name. It will failed.
-- **Please check your directory location! Please do not perform init within another DBT project. Always start init at the root folder.**
+- **Please check your directory location! Please do not perform init within another dbt project. Always start init at the root/home folder.**
 
 
-### DBT Profile
-Please note that there are multiple ways for DBT to work with profile, they are:
-- Automatic profile setup, DBT will always look at the default profile.yml located at `/Users/USER/.dbt/profile.yml`. If DBT found the same project name under your default profile, it will ask if you want to overwrite it. Otherwise, DBT will configure the profile over there. This is the recommend as the profile may contain sensitive information that is not appropriate for Github exposure.
+### dbt Profile
+Please note that there are multiple ways for dbt to work with profile, they are:
+- Automatic profile setup, dbt will always look at the default profile located at `/Users/USER/.dbt/profiles.yml`. If dbt found the same project name under your default profile, it will ask if you want to overwrite it. Otherwise, dbt will configure the profile over there. This is the recommend profile location as the profile may contain sensitive information that is not appropriate for Github exposure.
 - Using existing profile setup by ourselves. We can supplied and configure our own profile.
 
-### DBT Authentication
-- oauth : If you have previously use `gcloud auth application-default login` in your environment, oauth is recommend as no extra steps is needed.
-- service account : You need to create a service key in json from Google. This service key need to reside on a secure location that is accessible by the DBT system. A recommended location is the same location as the default profile (`profiles.yml`) location; which is at (`/Users/USER/.dbt/`). On how to generate service key please refer to this page: https://docs.getdbt.com/guides/bigquery?step=4.
+### dbt Authentication
+- Oauth : If you have previously use `gcloud auth application-default login` in your environment, oauth is recommend as no extra steps is needed.
+- Service Account : You need to create a service key in json from Google. This service key need to reside on a secure location that is accessible by the dbt system. A recommended location is the same location as the default profile (`profiles.yml`) location; which is at (`/Users/USER/.dbt/`). On how to generate service key please refer to this page: https://docs.getdbt.com/guides/bigquery?step=4.
 
-### DBT init - Automatic Profile Creation with Oauth
-- **Please check your directory location! Please do not perform init within another DBT project. Always start init at the root folder. Init will fail if there is an existing folder with the same project name.**
+### dbt init - Automatic Profile Creation with Oauth
+- **Please check your directory location! Please do not perform init within another dbt project. Always start init at the root folder. Init will fail if there is an existing folder with the same project name.**
 - When you run `dbt init <dbt-project-name>` it will create a folder with that project name and all the necessary subfolder.
-- Next it will automatically create a connection profile for you, based on the answer you supplied. For Mac user, the profile is located at `/Users/USER/.dbt/profile.yml`
+- Next it will automatically create a connection profile for you, based on the answer you supplied. For Mac user, the profile is located at `/Users/USER/.dbt/profiles.yml`
 
 #### Automatic Profile Setup Question
-- Which database would you like to use? >> Select [1] bigquery
-- Desired authentication method option (enter a number): >> Select 1 for oauth, 2 for service account
-- project (GCP project id): >> YourGoogleProject
-- dataset (the name of your dbt dataset): >> shaffle_shop (Note: you can specified the dataset you created on Bigquery, if you did not create a dataset, DBT will create one using the dataset name you supplied here)
-- threads (1 or more): >> enter a thread number
-- job_execution_timeout_seconds [300]: >> enter for default
-- Desired location option (enter a number): 1 for US and 2 for EU
+> - Which database would you like to use? >> Select [1] bigquery
+> - Desired authentication method option (enter a number): >> Select 1 for oauth, 2 for service account
+> - project (GCP project id): >> YourGoogleProject
+> - dataset (the name of your dbt dataset): >> shaffle_shop (Note: you can specified the dataset you created on Bigquery, if you did not create a dataset, dbt will create one using the dataset name you supplied here)
+> - threads (1 or more): >> enter a thread number
+> - job_execution_timeout_seconds [300]: >> enter for default
+> - Desired location option (enter a number): 1 for US and 2 for EU
 
 **Example**
 
@@ -91,7 +91,7 @@ Enter a number: 1
 [2] service_account
 Desired authentication method option (enter a number): 1
 project (GCP project id): bigquery-project-name
-dataset (the name of your dbt dataset): dataset-name
+dataset (the name of your dbt dataset): dataset_name
 threads (1 or more): 2
 job_execution_timeout_seconds [300]: 
 [1] US
@@ -106,7 +106,7 @@ Under the folder `/Users/USER/.dbt/profiles.yml`, you should have something simi
 jaffle_shop: # profile name (usually same as the project name in auto configuration)
   outputs:
     dev: # Target, usually dev or prod to differentiate between development and production
-      dataset: shaffle_shop #(google dataset, in this case I use the same name with the project name)
+      dataset: shaffle_shop #(Bigquery dataset, in this case I use the same name with the project name)
       job_execution_timeout_seconds: 300
       job_retries: 1
       location: US
@@ -118,20 +118,20 @@ jaffle_shop: # profile name (usually same as the project name in auto configurat
   target: dev
 ```
 
-### DBT init - Automatic Profile Creation with Service Account
-- **Please check your directory location! Please do not perform init within another DBT project. Always start init at the root folder. Init will fail if there is an existing folder with the same project name.**
+### dbt init - Automatic Profile Creation with Service Account
+- **Please check your directory location! Please do not perform init within another dbt project. Always start init at the root folder. Init will fail if there is an existing folder with the same project name.**
 - When you run `dbt init <dbt-project-name>` it will create a folder with that project name and all the necessary subfolder.
 - Next it will automatically create a connection profile for you, based on the answer you supplied. For Mac user, the profile is located at `/Users/USER/.dbt/profile.yml`
 
 #### Automatic Profile Setup Question
-- Which database would you like to use? >> Select [1] bigquery
-- Desired authentication method option (enter a number): >> 2 (Select 1 for oauth, 2 for service account)
-- keyfile (/path/to/bigquery/keyfile.json): /Users/USER/.dbt/name-of-your-service-key-created-in-Google.json
-- project (GCP project id): >> YourGoogleProject
-- dataset (the name of your dbt dataset): >> **liquor_sales** (Note: you can specified the dataset you created on Bigquery, if you did not create a dataset, DBT will create one using the dataset name you supplied here)
-- threads (1 or more): >> enter a thread number
-- job_execution_timeout_seconds [300]: >> enter for default
-- Desired location option (enter a number): 1 for US and 2 for EU
+> - Which database would you like to use? >> Select [1] bigquery
+> - Desired authentication method option (enter a number): >> 2 (Select 1 for oauth, 2 for service account)
+> - keyfile (/path/to/bigquery/keyfile.json): /Users/USER/.dbt/name-of-your-service-key-created-in-Google.json
+> - project (GCP project id): >> YourGoogleProject
+> - dataset (the name of your dbt dataset): >> **liquor_sales** (Note: you can specified the dataset you created on Bigquery, if you did not create a dataset, dbt will create one using the dataset name you supplied here)
+> - threads (1 or more): >> enter a thread number
+> - job_execution_timeout_seconds [300]: >> enter for default
+> - Desired location option (enter a number): 1 for US and 2 for EU
 
 **Example**
 
@@ -183,10 +183,10 @@ Under the folder `/Users/USER/.dbt/profiles.yml`, you should have something simi
 liquor_sales: # profile name (usually same as the project name in auto configuration)
   outputs:
     dev:
-      dataset: iowa_liquor_sales # This dataset is not create in Bigquery yet. DBT should able to create it automatically.
+      dataset: iowa_liquor_sales # This dataset is not create in Bigquery yet. dbt should able to create it automatically.
       job_execution_timeout_seconds: 300
       job_retries: 1
-      keyfile: /Users/USER/.dbt/name-of-your-service-key-created-in-Google.json #Under service account we need to specify the location of the keyfile
+      keyfile: /Users/USER/.dbt/name-of-your-service-key-created-in-Google.json # Under service account we need to specify the location of the keyfile
       location: US
       method: service-account
       priority: interactive
@@ -197,12 +197,12 @@ liquor_sales: # profile name (usually same as the project name in auto configura
 
 ```
 
-### DBT init - Custom Profile Creation with Oauth
-The following is to initialize a DBT project using existing profile:
+### dbt init - Custom Profile Creation with Oauth
+The following is to initialize a dbt project using existing profile:
 
 First we need a profile setup, see a sample profile:
 ```yaml
-## Custom DBT profile
+## Custom dbt profile
 ## Reference: https://docs.getdbt.com/docs/core/connect-data-platform/bigquery-setup
 
 # The first line is the profile name. This is where dbt looks for from dbt_project.yml -> find the named profile here. 
@@ -218,7 +218,7 @@ london_bicycle: # profile name (In this case where profile name come first, the 
       type: bigquery
       method: oauth 
       project: bigquery-project-name
-      dataset: london_bike # can be same or different from project name
+      dataset: london_bike # For this london dataset, we need to create dataset in Bigquery first, it can be same or different from project name
       retries: 2
   config:
     send_anonymous_usage_stats: False
@@ -226,11 +226,11 @@ london_bicycle: # profile name (In this case where profile name come first, the 
 
 **IMPORTANT NOTES:**
 - **The name of the file that contains the profile configuration has to be `profiles.yml`.**
-- **The profile need to be located where you run `dbt init`, otherwise dbt will use to the default profile location at `/Users/USER/.dbt/profile.yml`.**
+- **The profile need to be located where you run `dbt init`, otherwise dbt will use to the default profile location at `/Users/USER/.dbt/profiles.yml`.**
 
 **Where to put the profile:**
-- **We can place the `profiles.yml` at the root folder where we collected all different DBT projects. The profiles of additional DBT projects will be recorded under `profiles.yml`.**
-- **Alternatively, we can place the profile (`profiles.yml`) into each project folder. This means that each project folder contains their own profile configuration. In this case you need to physically move the file `profiles.yml` to the project subfolder.**
+- **We can place the `profiles.yml` at the root/home folder where we collected all different dbt projects. The profiles of additional dbt projects will be recorded under `profiles.yml`.**
+- **Alternatively, we can place the profile (`profiles.yml`) into each project folder. This means that each project folder contains their own profile configuration. In this case you need to physically move the file `profiles.yml` to the project subfolder after the initialization.**
 
 The command to run the initialization is `dbt init --profile <dbt-profile-name>`. You can also run `dbt init` where it will ask you to enter the profile name. After that it will ask if you want to reset the profile configuration in your current profile.
 
@@ -259,7 +259,7 @@ Happy modeling!
 ```
 
 
-## Verifying DBT Connections : dbt debug
+## Verifying dbt Connections : dbt debug
 We use `dbt debug` to confirm our connection and our settings in the profile.
 
 https://docs.getdbt.com/reference/commands/debug
@@ -267,14 +267,14 @@ https://docs.getdbt.com/reference/commands/debug
 **IMPORTANT:**
 - **You MUST run `dbt debug` under the individual project folder.**
 - **When `dbt debug` starts, it will look for the following files:**
-- **DBT will look for `dbt_project.yml` at the location where you run the command.**
-- **DBT will also look for `profiles.yml` at the location where you run the command FIRST, if there is no such file, then it will find the profile at the default location (`/Users/USER/.dbt/profiles.yml`).**
+- **dbt will look for `dbt_project.yml` at the location where you run the command.**
+- **dbt will also look for `profiles.yml` at the location where you run the command FIRST, if there is no such file, then it will find the profile at the default location (`/Users/USER/.dbt/profiles.yml`).**
 - **`dbt debug` will FAIL if it cannot find the file `dbt_project.yml`.**
 - **`dbt debug` will FAIL if it cannot find the matching profile name in `profiles.yml`. The profile name must match the profile settings in `dbt_project.yml`.**
 - **`dbt debug` will FAIL if there is problem with your Oauth or your service key.**
 
 
-The following screen shots shw the success message:
+The following screenshots show the success message:
 
 ![alt text](assets/dbt-debug-good1.png)
 
@@ -332,16 +332,16 @@ profile: "liquor_sales" # This profile name must match the name above.
 
 - **Please note that this error happens when you are creating a new profile for an existing project.**
 - **Important to note that profile name and project name can be different. In auto initialization, all will be the same.**
-- **You need different profile name when you need to create 2 different profiles connected to 2 different data warehouse or database using the same dbt project.**
+- **You need different profile names when you need to create 2 different profiles connected to 2 different data warehouse or database using the same dbt project.**
 
 The troubleshooting process should be as follows:
 1. Check the conda or Python environment
-2. Check if `dbt_project.yml` is there.
+2. Check if `dbt_project.yml` is at the location where you run `dbt debug`.
 3. Check if `profiles.yml` is at the project folder or default location. 
 4. Make sure the correct profile name is setup in `dbt_project.yml` and `profiles.yml`.
 
 
-### Connecting Existing DBT Project with New Profile
+### Connecting Existing dbt Project with New Profile
 Based on our understanding of the profiles, we can copy an existing dbt project and create a new profile that could point to our data warehouse.
 
 ```yaml
@@ -398,10 +398,10 @@ models:
       +schema: star
 ```
 
-**Using the same profile name, `dbt debug` is successful.**
+**Using the same profile name, `dbt debug` will be successful.**
 
-### Connecting Existing DBT Project with Multiple Profile
-We can also connect a same DBT project to different data warehouse or database. We can also setup different profile name for different Google project.
+### Connecting Existing dbt Project with Multiple Profile
+We can also connect a same dbt project to different data warehouse or database. We can also setup different profile name for different Google project.
 
 ```yaml
 !profiles.yml
@@ -465,4 +465,34 @@ profile: "liquor_sales" # Change this to any profile listed above before dbt run
 - https://docs.getdbt.com/guides/manual-install?step=1
 - https://docs.getdbt.com/guides/bigquery?step=1
 
-# DBT Run Notes
+# dbt Run Notes
+
+## Database Source Setup
+
+This setup is optional. However without it you always need to point to the correct database source. For example:
+
+> - data source for Shaffle shop : `dbt-tutorial`.jaffle_shop.customers
+> - data source for Iowa Liquor Sales : `bigquery-public-data.iowa_liquor_sales.sales`
+> - data source for London Bicycle : `bigquery-public-data.london_bicycles`
+
+Using the following format below, we created a yaml file called with any file name. However, the file must be places inside the models folder.  
+```yaml
+!sources.yml
+version: 2
+sources:
+  - name: london_bicycles
+    database: bigquery-public-data
+    tables:
+      - name: cycle_hire
+      - name: cycle_stations
+```
+
+After the configuration, we can use dbt 
+
+````sql
+select * from {{ source("source_name", "table_name") }}
+```
+
+## dbt Run (`dbt run`)
+- dbt run is the most basic command
+- **If there are snapshots, need to run `dbt snapshot` first before running `dbt run`.**
