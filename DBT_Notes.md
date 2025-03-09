@@ -500,7 +500,7 @@ Reference:
 
 ## dbt Run (`dbt run`)
 - dbt run is the most basic command
-- **If there are snapshots under the snapshots folder, we need to run `dbt snapshot` first before running `dbt run`.**
+- **If you are using snapshots reference in your models, we need to run `dbt snapshot` first before running `dbt run`.**
 - dbt run can be resource intensive if we are dealing with large database.
 - One option is to try the sql at Bigquery first using `LIMIT`
 
