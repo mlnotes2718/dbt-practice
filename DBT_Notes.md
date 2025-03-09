@@ -475,7 +475,7 @@ This setup is optional. However without it you always need to point to the corre
 
 Using the following format below, we created a yaml file called with any file name. However, the file must be places inside the models folder.  
 ```yaml
-!sources.yml
+!db_sources.yml # Any name but need to be in teh models folder
 version: 2
 sources:
   - name: london_bicycles
@@ -487,7 +487,7 @@ sources:
 
 After the configuration, we can use dbt Jinja reference as shown below:
 
-````sql
+```sql
 select * from {{ source("source_name", "table_name") }}
 ```
 
@@ -504,6 +504,20 @@ Reference:
 
 **Please note that when we use Bigquery to test sql, we need to use the original source string.**
 
+```sql
+SELECT
+    invoice_and_item_number,
+    date,
+    store_number,
+    item_number,
+    state_bottle_cost,
+    state_bottle_retail,
+    bottles_sold,
+    sale_dollars,
+    volume_sold_liters,
+    volume_sold_gallons
+FROM bigquery-public-data.iowa_liquor_sales.sales
+```
 
 dbt docs generate
 dbt docs serve
