@@ -637,8 +637,8 @@ The dbt seed command allows us to convert all csv files into data table and plac
 
 ## Other Useful dbt command
 
-Command to generate documentation: `dbt docs generate`
-Command to run a web server to view documentation: `dbt docs serve`
+- Command to generate documentation: `dbt docs generate`
+- Command to run a web server to view documentation: `dbt docs serve`
 
 Additional Reference:
 - Jinja reference: https://docs.getdbt.com/category/jinja-reference
