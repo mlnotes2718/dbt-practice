@@ -15,9 +15,9 @@ The following are dbt key commands:
 The following command **MUST** be run under the **specific project folder**.
 - `dbt debug` : Use this command to verified your connection in your profile.
 - `dbt run` : Use this command to run all the SQL script setup in the dbt folders.
+- `dbt snapshot` : Use this command to build snapshot
 - `dbt test` : Use this command to test the database field. Similar to constraints during database table setup. However, dbt uses schema.yml file for configuration
 - `dbt seed` : Use this command to convert CSV files into database table
-- `dbt snapshot` : Use this command to build snapshot 
 
 
 ## dbt init
@@ -194,6 +194,8 @@ liquor_sales: # profile name (usually same as the project name in auto configura
   target: dev
 
 ```
+
+
 
 ### dbt init - Custom Profile Creation with Oauth
 The following is to initialize a dbt project using existing profile:
@@ -475,7 +477,7 @@ This setup is optional. However without it you always need to point to the corre
 
 Using the following format below, we created a yaml file called with any file name. However, the file must be places inside the models folder.  
 ```yaml
-!db_sources.yml # Any name but need to be in teh models folder
+!db_sources.yml # Any name but need to be in the models folder
 version: 2
 sources:
   - name: london_bicycles
@@ -498,7 +500,7 @@ Reference:
 
 ## dbt Run (`dbt run`)
 - dbt run is the most basic command
-- **If there are snapshots under teh snapshots folder, we need to run `dbt snapshot` first before running `dbt run`.**
+- **If there are snapshots under the snapshots folder, we need to run `dbt snapshot` first before running `dbt run`.**
 - dbt run can be resource intensive if we are dealing with large database.
 - One option is to try the sql at Bigquery first using `LIMIT`
 
@@ -518,9 +520,125 @@ SELECT
     volume_sold_gallons
 FROM bigquery-public-data.iowa_liquor_sales.sales
 ```
+Once the test is successful, then we can place them in dbt sql script.
 
-dbt docs generate
-dbt docs serve
+## dbt snapshot
+dbt allow us to create snapshot that could track changes in data overtime.
+
+More details can be found here: https://docs.getdbt.com/docs/build/snapshots
+
+Please note that the following template is legacy type of snapshot
+You can get more information from : https://docs.getdbt.com/reference/resource-configs/snapshots-jinja-legacy
+```sql
+{ % snapshot orders_snapshot %}
+
+{{ config(
+    target_schema="<string>",
+    target_database="<string>",
+    unique_key="<column_name_or_expression>",
+    strategy="timestamp" | "check",
+    updated_at="<column_name>",
+    check_cols=["<column_name>"] | "all"
+    invalidate_hard_deletes : true | false
+) 
+}}
+
+select * from {{ source('jaffle_shop', 'orders') }}
+
+{% endsnapshot %}
+```
+Example:
+
+```sql
+{% snapshot orders_snapshot %}
+
+    {{
+        config(
+          target_schema='snapshots',
+          strategy='timestamp',
+          unique_key='id',
+          updated_at='updated_at',
+        )
+    }}
+
+    select * from {{ source('jaffle_shop', 'orders') }}
+
+{% endsnapshot %}
+```
+For new snapshot setup, please refer to the example below. For more details please refer to https://docs.getdbt.com/docs/build/snapshots
+
+```yaml
+snapshots:
+  - name: orders_snapshot
+    relation: source('jaffle_shop', 'orders')
+    config:
+      schema: snapshots
+      database: analytics
+      unique_key: id
+      strategy: timestamp
+      updated_at: updated_at
+      dbt_valid_to_current: "to_date('9999-12-31')" # Specifies that current records should have `dbt_valid_to` set to `'9999-12-31'` instead of `NULL`.
+
+```
+
+There is a common error where `updated_at` is not being recognized. For more information please refer to the link: https://docs.getdbt.com/reference/resource-configs/updated_at
+
+## dbt test
+We use dbt test to check the constraints of the datatype in the database. To create the template you need to create a file `schema.yml`. Please see the example below:
+
+```yaml
+!schema.yml
+models:
+  - name: customers
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+      - name: first_order_date
+
+  - name: stg_customers
+    columns:
+      - name: customer_id
+        tests:
+          - unique
+          - not_null
+
+  - name: stg_orders
+    columns:
+      - name: order_id
+        tests:
+          - unique
+          - not_null
+      - name: status
+        tests:
+          - accepted_values:
+              values: ['placed', 'shipped', 'completed', 'return_pending', 'returned']
+      - name: customer_id
+        tests:
+          - not_null
+```
+
+The template specifically define the test criteria for each fields.
+
+For more information, please refer to https://docs.getdbt.com/docs/build/data-tests
+
+Please note that for complex test cases, we can write SQL script and place it in the test folder.
+
+The command `dbt test` will run the test and report any findings.
+
+## dbt seed
+The dbt seed command allows us to convert all csv files into data table and place it in Bigquery. The procedure is as follows:
+
+1. Place all csv files into the seed sub folder in the dbt project folder.
+2. Run the command `dbt seed`
+3. It will show if the command is successful.
+4. Please note that if ingestion is successful, you need to proceed to Bigquery to see the tables. Nothing will be shown in the project folder.
+
+## Other Useful dbt command
+
+Command to generate documentation: `dbt docs generate`
+Command to run a web server to view documentation: `dbt docs serve`
 
 Additional Reference:
 - Jinja reference: https://docs.getdbt.com/category/jinja-reference
