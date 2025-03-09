@@ -51,7 +51,7 @@ Please note that there are multiple ways for dbt to work with profile, they are:
 > - Which database would you like to use? >> Select [1] bigquery
 > - Desired authentication method option (enter a number): >> Select 1 for oauth, 2 for service account
 > - project (GCP project id): >> YourGoogleProject
-> - dataset (the name of your dbt dataset): >> shaffle_shop (Note: you can specified the dataset you created on Bigquery, if you did not create a dataset, dbt will create one using the dataset name you supplied here)
+> - dataset (the name of your dbt dataset): >> jaffle_shop (Note: you can specified the dataset you created on Bigquery, if you did not create a dataset, dbt will create one using the dataset name you supplied here)
 > - threads (1 or more): >> enter a thread number
 > - job_execution_timeout_seconds [300]: >> enter for default
 > - Desired location option (enter a number): 1 for US and 2 for EU
@@ -60,12 +60,10 @@ Please note that there are multiple ways for dbt to work with profile, they are:
 
 The following is a sample of automatic init
 ```text
-% dbt init shaffle_shop
-05:56:30  Running with dbt=1.9.2
-05:56:30  [ConfigFolderDirectory]: Unable to parse logging event dictionary. Failed to parse dir field: expected string or bytes-like object.. Dictionary: {'dir': PosixPath('/Users/USER/.dbt')}
-05:56:30  Creating dbt configuration folder at 
-05:56:30  
-Your new dbt project "shaffle_shop" was created!
+% dbt init jaffle_shop
+05:28:39  Running with dbt=1.9.2
+05:28:39  
+Your new dbt project "jaffle_shop" was created!
 
 For more information on how to configure the profiles.yml file,
 please consult the dbt documentation here:
@@ -80,7 +78,7 @@ Need help? Don't hesitate to reach out to us via GitHub issues or on Slack:
 
 Happy modeling!
 
-05:56:30  Setting up your profile.
+05:28:39  Setting up your profile.
 Which database would you like to use?
 [1] bigquery
 
@@ -91,13 +89,13 @@ Enter a number: 1
 [2] service_account
 Desired authentication method option (enter a number): 1
 project (GCP project id): bigquery-project-name
-dataset (the name of your dbt dataset): dataset_name
+dataset (the name of your dbt dataset): jaffle_shop
 threads (1 or more): 2
 job_execution_timeout_seconds [300]: 
 [1] US
 [2] EU
 Desired location option (enter a number): 1
-05:59:28  Profile shaffle_shop written to /Users/USER/.dbt/profiles.yml using target's profile_template.yml and your supplied values. Run 'dbt debug' to validate the connection.
+05:29:25  Profile jaffle_shop written to /Users/USER/.dbt/profiles.yml using target's profile_template.yml and your supplied values. Run 'dbt debug' to validate the connection.
 ```
 **Checking Profile**
 
@@ -106,7 +104,7 @@ Under the folder `/Users/USER/.dbt/profiles.yml`, you should have something simi
 jaffle_shop: # profile name (usually same as the project name in auto configuration)
   outputs:
     dev: # Target, usually dev or prod to differentiate between development and production
-      dataset: shaffle_shop #(Bigquery dataset, in this case I use the same name with the project name)
+      dataset: jaffle_shop #(Bigquery dataset, in this case I use the same name with the project name)
       job_execution_timeout_seconds: 300
       job_retries: 1
       location: US
@@ -121,7 +119,7 @@ jaffle_shop: # profile name (usually same as the project name in auto configurat
 ### dbt init - Automatic Profile Creation with Service Account
 - **Please check your directory location! Please do not perform init within another dbt project. Always start init at the root folder. Init will fail if there is an existing folder with the same project name.**
 - When you run `dbt init <dbt-project-name>` it will create a folder with that project name and all the necessary subfolder.
-- Next it will automatically create a connection profile for you, based on the answer you supplied. For Mac user, the profile is located at `/Users/USER/.dbt/profile.yml`
+- Next it will automatically create a connection profile for you, based on the answer you supplied. For Mac user, the profile is located at `/Users/USER/.dbt/profiles.yml`
 
 #### Automatic Profile Setup Question
 > - Which database would you like to use? >> Select [1] bigquery
@@ -471,7 +469,7 @@ profile: "liquor_sales" # Change this to any profile listed above before dbt run
 
 This setup is optional. However without it you always need to point to the correct database source. For example:
 
-> - data source for Shaffle shop : `dbt-tutorial`.jaffle_shop.customers
+> - data source for jaffle shop : `dbt-tutorial`.jaffle_shop.customers
 > - data source for Iowa Liquor Sales : `bigquery-public-data.iowa_liquor_sales.sales`
 > - data source for London Bicycle : `bigquery-public-data.london_bicycles`
 
@@ -487,12 +485,28 @@ sources:
       - name: cycle_stations
 ```
 
-After the configuration, we can use dbt 
+After the configuration, we can use dbt Jinja reference as shown below:
 
 ````sql
 select * from {{ source("source_name", "table_name") }}
 ```
 
+Reference:
+- Setting datasource: https://docs.getdbt.com/reference/resource-properties/database
+- Using Jinja reference and source database: https://docs.getdbt.com/reference/dbt-jinja-functions/source
+
+
 ## dbt Run (`dbt run`)
 - dbt run is the most basic command
-- **If there are snapshots, need to run `dbt snapshot` first before running `dbt run`.**
+- **If there are snapshots under teh snapshots folder, we need to run `dbt snapshot` first before running `dbt run`.**
+- dbt run can be resource intensive if we are dealing with large database.
+- One option is to try the sql at Bigquery first using `LIMIT`
+
+**Please note that when we use Bigquery to test sql, we need to use the original source string.**
+
+
+dbt docs generate
+dbt docs serve
+
+Additional Reference:
+- Jinja reference: https://docs.getdbt.com/category/jinja-reference
