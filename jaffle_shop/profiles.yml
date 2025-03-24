@@ -1,0 +1,14 @@
+jaffle_shop:
+  outputs:
+    dev:
+      dataset: jaffle_shop
+      job_execution_timeout_seconds: 300
+      job_retries: 1
+      keyfile: ../.service_keys/sctp-dbt-learn-15d36f52978f.json
+      location: US
+      method: service-account
+      priority: interactive
+      project: sctp-dbt-learn
+      threads: 3
+      type: bigquery
+  target: dev

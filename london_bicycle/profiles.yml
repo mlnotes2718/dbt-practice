@@ -12,7 +12,8 @@ london_bicycle: # profile name
     priority: interactive
     dev:
       type: bigquery
-      method: oauth 
+      method: service-account
+      keyfile: ../.service_keys/sctp-dbt-learn-15d36f52978f.json 
       project: sctp-dbt-learn
       dataset: london_bike
       retries: 2
