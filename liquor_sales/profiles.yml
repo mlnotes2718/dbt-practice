@@ -4,11 +4,11 @@ liquor_sales:
       dataset: iowa_liquor_sales
       job_execution_timeout_seconds: 300
       job_retries: 1
-      keyfile: ../.service_keys/sctp-dbt-learn-15d36f52978f.json
+      keyfile: ../.keys/sctp-dbt-1f61d505397b.json
       location: US
       method: service-account
       priority: interactive
-      project: sctp-dbt-learn
+      project: sctp-dbt
       threads: 3
       type: bigquery
   target: dev

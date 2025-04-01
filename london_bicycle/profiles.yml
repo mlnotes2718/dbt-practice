@@ -13,8 +13,8 @@ london_bicycle: # profile name
     dev:
       type: bigquery
       method: service-account
-      keyfile: ../.service_keys/sctp-dbt-learn-15d36f52978f.json 
-      project: sctp-dbt-learn
+      keyfile: ../.keys/sctp-dbt-1f61d505397b.json 
+      project: sctp-dbt
       dataset: london_bike
       retries: 2
   config:
